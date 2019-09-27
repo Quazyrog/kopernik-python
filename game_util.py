@@ -9,8 +9,6 @@ ASSETS_DIR = "./Assets"
 
 
 class Game:
-    _levels = {}
-
     def __init__(self):
         self.running = False
         self.screen = None
@@ -18,7 +16,8 @@ class Game:
         self.level = None
         self.player_movement = Vector2(0, 0)
 
-    def main_loop(self) -> None:
+    def start(self) -> None:
+        self.initialize()
         self.running = True
         t0 = pygame.time.get_ticks()
         while self.running:
@@ -28,11 +27,9 @@ class Game:
             self.render()
             t0 = t1
 
-    def initialize(self, starting_level_name: str) -> None:
+    def initialize(self) -> None:
         pygame.init()
         self.screen = pygame.display.set_mode(SCREEN_SIZE)
-        self.player = Player()
-        self.load_level(starting_level_name)
 
     def handle_events(self) -> None:
         for event in pygame.event.get():
@@ -50,7 +47,11 @@ class Game:
                 elif pygame.K_RIGHT == event.key:
                     change.x = sgn
                 elif pygame.K_SPACE == event.key and event.type == pygame.KEYUP:
-                    self.level.player_interact()
+                    sprite = pygame.sprite.spritecollideany(self.player, self.level.interactions, False)
+                    if sprite is None:
+                        return
+                    interacted = sprite.map_object
+                    self.level.activate_object(interacted)
                 self.player_movement += change
                 self.player.move(self.player_movement)
 
@@ -75,24 +76,18 @@ class Game:
 
         pygame.display.flip()
 
-    def load_level(self, level_name: str) -> None:
-        self.level = Game._levels[level_name](self)
-        self.level.set_player(self.player, not self.running)
-        self.player.level = self.level
-
-
+    
 class Level:
-    _level_name = None
-    _action_handlers = {}
-
-    def __init__(self, game: Game):
-        self.map_data = pytmx.load_pygame("%s/%s.tmx" % (ASSETS_DIR, self.__class__._level_name))
+    def __init__(self, name: str, game: Game):
+        self.map_data = pytmx.load_pygame("%s/%s.tmx" % (ASSETS_DIR, name))
         self.colliders = pygame.sprite.Group()
         self.interactions = pygame.sprite.Group()
+        self.triggers = pygame.sprite.Group()
         self.game = game
         self.player = None
         self.tile_size = self.map_data.tilewidth
         self.bounds = pygame.Rect(0, 0, self.tile_size * self.map_data.width, self.tile_size * self.map_data.height)
+        self.name = name
         assert self.map_data.tilewidth == self.map_data.tileheight
 
         for group in self.map_data.objectgroups:
@@ -102,9 +97,13 @@ class Level:
             if group.name == "Interaction":
                 for obj in group:
                     self.interactions.add(MapObject(obj))
+            if group.name == "Trigger":
+                for obj in group:
+                    self.triggers.add(MapObject(obj))
 
     def set_player(self, player: "Player", on_spawn : bool) -> None:
         self.player = player
+        player.level = self
         if not on_spawn:
             return
         try:
@@ -113,23 +112,8 @@ class Level:
         except ValueError:
             pass
 
-    def player_interact(self) -> None:
-        sprite = pygame.sprite.spritecollideany(self.player, self.interactions, False)
-        if sprite is None:
-            return
-        interacted = sprite.map_object
-
-        if interacted.properties["Action"] == "Teleport":
-            level_name = interacted.properties["Level"]
-            x = int(interacted.properties["X"])
-            y = int(interacted.properties["Y"])
-            self.player.position = Vector2(x, y)
-            self.player.rect = pygame.Rect(x, y, self.player.rect.width, self.player.rect.height)
-            self.game.load_level(level_name)
-
-    def activate_object(self, map_object: TiledObject):
-        pass
-
+    def activate_object(self, obj):
+        print(obj)
 
 class MapObject(pygame.sprite.Sprite):
     def __init__(self, obj_data):
@@ -147,6 +131,7 @@ class Player(pygame.sprite.Sprite):
         self._position = Vector2(0, 0)
         self._speed = Vector2(0, 0)
         self.velocity = 2
+        self._triggered = set()
 
     def move(self, direction: Vector2):
         try:
@@ -171,15 +156,12 @@ class Player(pygame.sprite.Sprite):
         self.rect = pygame.Rect(self.position.x + mov.x, self.position.y + mov.y, before.width, before.height)
         if spritecollideany(self, self.level.colliders, False) is None and self.level.bounds.contains(self.rect):
             self._position += mov
+            s = set()
+            for obj in pygame.sprite.spritecollide(self, self.level.interactions, False):
+                s.add(obj.map_object)
+            for obj in s:
+                if obj not in self._triggered:
+                    self.level.activate_object(obj)
+            self._triggered = s
         else:
             self.rect = before
-
-
-def register_level(name):
-    def decorator(level_class):
-        print("Register level logic %s -> %s" % (name, str(level_class)))
-        Game._levels[name] = level_class
-        level_class._level_name = name
-        level_class._action_handlers = {}
-        return level_class
-    return decorator

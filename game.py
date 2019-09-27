@@ -1,23 +1,26 @@
-from game_util import Player, Game, Level, register_level
+from game_util import Player, Game, Level
+from pygame import Vector2
 
 
-class MyPlayer(Player):
+class MyGame(Game):
     def __init__(self):
         super().__init__()
+        self.levels = {}
 
+    def initialize(self):
+        super().initialize()
+        self.player = Player()
+        self.level = MainLevel(self)
+        self.level.set_player(self.player, True)
 
-@register_level("Main")
+    def activate_object(self, map_object):
+        print(map_object)
+        
+
 class MainLevel(Level):
     def __init__(self, game):
-        super().__init__(game)
+        super().__init__("Main", game)
 
 
-@register_level("North")
-class MainLevel(Level):
-    def __init__(self, game):
-        super().__init__(game)
-
-
-game = Game()
-game.initialize("Main")
-game.main_loop()
+game = MyGame()
+game.start()
