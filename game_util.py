@@ -58,11 +58,18 @@ class Game:
     def update(self, time_delta: float) -> None:
         self.player.update(time_delta)
 
-    def render_layer(self, layer: TiledTileLayer, offset: Vector2) -> None:
+    def render_tiles_layer(self, layer: TiledTileLayer, offset: Vector2) -> None:
         for x, y, image in layer.tiles():
             pos_x = offset[0] + x * self.level.tile_size
             pos_y = offset[1] + y * self.level.tile_size
             self.screen.blit(image, (pos_x, pos_y))
+
+    def render_objects_layer(self, layer: TiledTileLayer, offset: Vector2) -> None:
+        for obj in layer:
+            print(obj, obj.image)
+            if obj.image:
+                self.screen.blit(obj.image, (obj.x + offset.x, obj.y + offset.y))
+
 
     def render(self) -> None:
         offset = Vector2()
@@ -71,7 +78,9 @@ class Game:
 
         self.screen.fill((0, 0, 0))
         for layer in self.level.map_data.visible_tile_layers:
-            self.render_layer(self.level.map_data.layers[layer], offset)
+            self.render_tiles_layer(self.level.map_data.layers[layer], offset)
+        for layer in self.level.map_data.visible_object_groups:
+            self.render_objects_layer(self.level.map_data.layers[layer], offset)
         self.screen.blit(self.player.image, self.player.rect.move(offset.x, offset.y))
 
         pygame.display.flip()
@@ -112,8 +121,9 @@ class Level:
         except ValueError:
             pass
 
-    def activate_object(self, obj):
+    def activate_object(self, obj : TiledObject) -> None:
         print(obj)
+
 
 class MapObject(pygame.sprite.Sprite):
     def __init__(self, obj_data):
