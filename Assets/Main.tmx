@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.2" tiledversion="1.2.4" orientation="orthogonal" renderorder="right-down" width="16" height="12" tilewidth="32" tileheight="32" infinite="0" nextlayerid="7" nextobjectid="9">
+ <tileset firstgid="1" source="Tiles.tsx"/>
+ <layer id="1" name="Tile Layer 1" width="16" height="12">
+  <data encoding="csv">
+4,4,4,4,4,2,2,2,2,2,2,4,4,4,4,4,
+4,4,4,4,4,2,2,2,2,2,2,4,4,4,4,4,
+4,4,4,4,4,2,2,2,2,2,2,4,4,4,4,4,
+4,4,4,4,2,2,2,2,2,2,2,2,4,4,4,4,
+2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,
+2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,
+2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,
+2,2,2,2,2,2,3,3,3,3,2,2,2,2,2,2,
+2,2,2,2,2,3,3,3,3,3,3,2,2,2,2,2,
+2,2,2,2,2,3,3,3,3,3,3,2,2,2,2,2,
+2,2,2,2,2,3,3,3,3,3,3,2,2,2,2,2,
+17,17,17,17,17,17,17,17,17,17,17,17,17,17,17,17
+</data>
+ </layer>
+ <layer id="2" name="Tile Layer 2" width="16" height="12">
+  <data encoding="csv">
+4,4,4,4,5,21,17,1,17,17,20,8,4,4,4,4,
+4,4,4,4,5,0,0,16,0,0,0,8,4,4,4,4,
+4,4,4,4,5,0,0,16,0,0,0,8,4,4,4,4,
+7,7,7,7,0,0,0,16,0,0,0,0,7,7,7,7,
+0,0,0,0,0,0,0,16,0,0,0,0,0,0,0,0,
+15,15,15,15,15,15,15,10,15,15,15,15,15,15,15,15,
+0,0,0,0,0,0,0,16,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,6,6,6,6,0,0,0,0,0,0,
+0,0,0,0,0,8,0,0,0,0,5,0,0,0,0,0,
+0,0,0,0,0,8,0,0,0,0,5,0,0,0,0,0,
+0,0,0,0,0,8,0,0,0,0,5,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+</data>
+ </layer>
+ <layer id="3" name="Tile Layer 3" width="16" height="12">
+  <data encoding="csv">
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,13,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,9,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+</data>
+ </layer>
+ <objectgroup id="4" name="Collision">
+  <object id="4" type="Collider" x="0" y="0" width="148.667" height="120"/>
+  <object id="5" type="Collider" x="364" y="0" width="148.667" height="120"/>
+  <object id="6" type="Collider" x="169.333" y="-2.66667" width="54.6667" height="34.6667"/>
+  <object id="7" type="Collider" x="255.333" y="0" width="86.6667" height="33.3333"/>
+  <object id="8" type="Collider" x="-0.666667" y="348.667" width="514" height="36"/>
+ </objectgroup>
+ <objectgroup id="5" name="Interaction">
+  <object id="2" name="To North" type="Interaction" gid="23" x="224" y="32" width="32" height="32">
+   <properties>
+    <property name="Action" value="Teleport"/>
+    <property name="Level" value="North"/>
+    <property name="X" type="int" value="140"/>
+    <property name="Y" type="int" value="200"/>
+   </properties>
+  </object>
+ </objectgroup>
+ <objectgroup id="6" name="Other">
+  <object id="1" name="Spawn" gid="24" x="230" y="185" width="16" height="26"/>
+ </objectgroup>
+</map>
